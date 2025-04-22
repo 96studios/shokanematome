@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --success: #28a745;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 55px 20px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: white;
+            transform: skewY(-3deg);
+            z-index: 1;
+        }
+        
+        .user-email {
+            margin-top: 10px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .content {
+            padding: 35px 20px 25px;
+            position: relative;
+            z-index: 3;
+        }
+        
+        h1 {
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 24px;
+        }
+        
+        .amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 15px 0;
+            color: var(--dark);
+        }
+        
+        .cart-items {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .item-name {
+            font-weight: 500;
+        }
+        
+        .item-price {
+            font-weight: 600;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-weight: bold;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .payment-icon {
+            width: 50px;
+            height: 30px;
+            object-fit: contain;
+            filter: grayscale(30%);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .payment-icon.active {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+        
+        .cash-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f1f1;
+            border-radius: 4px;
+            padding: 0 10px;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        .cash-icon.active {
+            background: #e0e0e0;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #3a5bef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(74, 107, 255, 0.1);
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .note {
+            color: var(--gray);
+            font-size: 13px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 90%;
+            max-width: 450px;
+            padding: 25px;
+            transform: translateY(-50px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .bank-details, .cash-instructions {
+            text-align: left;
+            margin-top: 15px;
+        }
+        
+        .bank-details h3, .cash-instructions h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .bank-details p {
+            margin-bottom: 10px;
+        }
+        
+        .bank-details strong {
+            display: inline-block;
+            width: 120px;
+        }
+        
+        .cash-instructions p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .whatsapp-link {
+            display: inline-block;
+            background: #25D366;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .whatsapp-link i {
+            margin-right: 5px;
+        }
+        
+        .map-container {
+            height: 200px;
+            width: 100%;
+            margin: 15px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media (min-width: 400px) {
+            .btn-container {
+                flex-direction: row;
+            }
+            
+            .btn {
+                width: auto;
+                padding: 12px 25px;
+            }
+        }
+
+        .account-number-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .copy-btn {
+        background: #f0f0f0;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+        background: #e0e0e0;
+    }
+    
+    .copy-btn i {
+        margin-right: 4px;
+    }
+    </style>
+</head>
+<body>
+    <div class="confirmation-card">
+        <div class="header">
+            <h1>Complete Your Payment</h1>
+            <div class="user-email">Shokanematome@Gmail.com</div>
+            <p style="padding-top: 10PX;">96-QNJPWW6</p>
+        </div>
+        
+        <div class="content">
+            <div class="cart-items">
+                <div class="cart-item">
+                    <span class="item-name">Poster Design</span>
+                    <span class="item-price">R180.00</span>
+                </div>
+                <div class="cart-item">
+                    <span class="item-name" style="color: rgb(0, 187, 0);">Discount Amount</span>
+                    <span  style=" font-weight: 700; color: rgb(0, 187, 0);">-R20.00</span>
+                </div>
+                
+                <div class="total-row">
+                    <span>Total Amount:</span>
+                    <span class="amount" id="totalAmount">R0.00</span>
+                </div>
+            </div>
+            
+            <div class="payment-methods">
+                <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" class="payment-icon active" data-method="bank">
+                <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" class="payment-icon" data-method="bank">
+                <div class="payment-icon cash-icon" data-method="cash">CASH</div>
+            </div>
+            
+            <div class="btn-container">
+                <a href="#" class="btn" id="payButton">Pay Now R0.00</a>
+                <a href="https://96studios.co.za/" class="btn btn-outline">Back to Shop</a>
+            </div>
+            
+            <p class="note">
+                We will start working on your design after payment confirmation.
+                For any questions, please chat with our <a href="https://wa.me/27835428310" target="_blank" >team designer.</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="paymentPopup">
+        <div class="popup-content">
+            <button class="close-popup" id="closePopup">&times;</button>
+            
+            <div class="bank-details" id="bankDetails">
+                <h3>Bank Transfer Details</h3>
+                <p><strong>Bank Name:</strong> Standard Bank</p>
+                <p><strong>Account Name:</strong> 96 Studios</p>
+                <p class="account-number-row">
+                    <strong>Account Number:</strong> 
+                    <span id="accountNumber">10214743584</span>
+                    <button class="copy-btn" onclick="copyAccountNumber()">
+                        <i class="far fa-copy"></i> Copy
+                    </button>
+                </p>
+                <p><strong>Branch Code:</strong> 051001</p>
+                <p><strong>Reference:</strong> [Your email address]</p>
+                <p><strong>Amount:</strong> <span id="popupAmount">R0.00</span></p>
+                
+                <p style="margin-top: 20px;">
+                    Please send proof of payment via WhatsApp:
+                </p>
+                <a href="https://wa.me/27817925033?text=Payment%20Proof%20for%20Order%20%23" class="whatsapp-link" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Send on WhatsApp
+                </a>
+            </div>
+            
+            <div class="cash-instructions" id="cashInstructions" style="display: none;">
+                <h3>Cash Payment Instructions</h3>
+                <p>Please visit us to complete your payment in cash.</p>
+                <p>Bring this order reference with you for quick processing.</p>
+                
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.2274975076416!2d29.699075599999997!3d-23.7749119!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ec6c78ba089f6b5%3A0x28ab91810f8ba04e!2s96%20studios!5e0!3m2!1sen!2sza!4v1742852990046!5m2!1sen!2sza" 
+                            allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                
+                <p><strong>Business Hours:</strong><br>
+                Monday-Thursday: 9am-4pm<br>
+                Friday: 9am-2pm</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate total amount
+            const prices = document.querySelectorAll('.item-price');
+            let total = 0;
+            
+            prices.forEach(priceElement => {
+                const priceText = priceElement.textContent;
+                const priceValue = parseFloat(priceText.replace('R', '').replace(',', ''));
+                total += priceValue;
+            });
+            
+            // Format total with 2 decimal places
+            const formattedTotal = 'R' + total.toFixed(2);
+            
+            // Update total amount display
+            document.getElementById('totalAmount').textContent = formattedTotal;
+            
+            // Update Pay Now button with total
+            document.getElementById('payButton').textContent = 'Pay Now ' + formattedTotal;
+            document.getElementById('popupAmount').textContent = formattedTotal;
+            
+            // Payment method selection
+            const paymentIcons = document.querySelectorAll('.payment-icon');
+            paymentIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    paymentIcons.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Popup functionality
+            const payButton = document.getElementById('payButton');
+            const popup = document.getElementById('paymentPopup');
+            const closePopup = document.getElementById('closePopup');
+            const bankDetails = document.getElementById('bankDetails');
+            const cashInstructions = document.getElementById('cashInstructions');
+            
+            payButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Determine which payment method is selected
+                const activeMethod = document.querySelector('.payment-icon.active').dataset.method;
+                
+                if(activeMethod === 'bank') {
+                    bankDetails.style.display = 'block';
+                    cashInstructions.style.display = 'none';
+                } else {
+                    bankDetails.style.display = 'none';
+                    cashInstructions.style.display = 'block';
+                }
+                
+                popup.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closePopup.addEventListener('click', function() {
+                popup.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close popup when clicking outside
+            popup.addEventListener('click', function(e) {
+                if(e.target === popup) {
+                    popup.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        function copyAccountNumber() {
+        const accountNumber = document.getElementById('accountNumber').textContent;
+        navigator.clipboard.writeText(accountNumber).then(() => {
+            // Optional: Show copied feedback
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="far fa-copy"></i> Copy';
+            }, 2000);
+        });
+    }
+    </script>
+
+    
+</body>
+</html>
