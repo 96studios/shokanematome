@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Confirmation</title>
+    <title>Payment session-closed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -355,26 +355,16 @@
 <body>
     <div class="confirmation-card">
         <div class="header">
-            <h1>Complete Your Payment</h1>
+            <h1>This session closed</h1>
             <div class="user-email">Shokanematome@Gmail.com</div>
-            <p style="padding-top: 10PX;">96-QNJPWW6</p>
+            <p style="text-align: center; padding-top: 10px;">96-QNJPWW6</p>
         </div>
         
         <div class="content">
             <div class="cart-items">
-                <div class="cart-item">
-                    <span class="item-name">Poster Design</span>
-                    <span class="item-price">R180.00</span>
-                </div>
-                <div class="cart-item">
-                    <span class="item-name" style="color: rgb(0, 187, 0);">Discount Amount</span>
-                    <span  style=" font-weight: 700; color: rgb(0, 187, 0);">-R20.00</span>
-                </div>
-                
-                <div class="total-row">
-                    <span>Total Amount:</span>
-                    <span class="amount" id="totalAmount">R0.00</span>
-                </div>
+                <h1 hidden style="text-align: center;"><strong style="color: black;">1/3</strong> designed to get 10%off.</h1>
+                <h1  style="text-align: center;"> You unlocked 10% discounts <br>on all designs.</h1>
+                <p style="text-align: center;">Thank you for using our services</p>
             </div>
             
             <div class="payment-methods">
@@ -383,13 +373,8 @@
                 <div class="payment-icon cash-icon" data-method="cash">CASH</div>
             </div>
             
-            <div class="btn-container">
-                <a href="#" class="btn" id="payButton">Pay Now R0.00</a>
-                <a href="https://96studios.co.za/" class="btn btn-outline">Back to Shop</a>
-            </div>
-            
             <p class="note">
-                We will start working on your design after payment confirmation.
+                We really appreciate your support. <br>
                 For any questions, please chat with our <a href="https://wa.me/27835428310" target="_blank" >team designer.</a>
             </p>
         </div>
@@ -411,7 +396,7 @@
                         <i class="far fa-copy"></i> Copy
                     </button>
                 </p>
-                <p><strong>Branch Code:</strong> 051001</p>
+                <p><strong>Branch Code:</strong> 7445</p>
                 <p><strong>Reference:</strong> [Your email address]</p>
                 <p><strong>Amount:</strong> <span id="popupAmount">R0.00</span></p>
                 
@@ -484,7 +469,7 @@
                 // Determine which payment method is selected
                 const activeMethod = document.querySelector('.payment-icon.active').dataset.method;
                 
-                if(activeMethod === 'bank') {
+                if(activeMethod === 'cash') {
                     bankDetails.style.display = 'block';
                     cashInstructions.style.display = 'none';
                 } else {
